@@ -166,6 +166,7 @@ namespace Ogre {
     {
         // Go through viewports in Z-order
         // Tell each to refresh
+        // 一个RenderTarget中的多个ViewPort
         for (const auto& v : mViewportList)
         {
             Viewport* viewport = v.second;

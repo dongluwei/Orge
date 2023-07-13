@@ -842,6 +842,7 @@ namespace Ogre {
 
         while( !mQueuedEnd )
         {
+            // ‰÷»æ“ª÷°
             if (!renderOneFrame())
                 break;
         }

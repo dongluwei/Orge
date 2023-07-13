@@ -252,6 +252,7 @@ namespace Ogre {
     {
         // Update all in order of priority
         // This ensures render-to-texture targets get updated before render windows
+        // 更新所有RenderTargets
         for (auto& rt : mPrioritisedRenderTargets)
         {
             if (rt.second->isActive() && rt.second->isAutoUpdated())

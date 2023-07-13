@@ -485,6 +485,7 @@ namespace Ogre {
             mPixelDisplayRatio = -mExtents.height() / vp->getActualHeight();
         }
 
+        // Listener通知Scene层监听渲染消息Pre and Post
         //notify prerender scene
         ListenerList listenersCopy = mListeners;
         for (auto & i : listenersCopy)

@@ -1109,6 +1109,7 @@ void SceneManager::prepareRenderQueue(void)
     // Global split options
     updateRenderQueueSplitOptions();
 }
+// 一次Render，Camera, ViewPort
 //-----------------------------------------------------------------------
 void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverlays)
 {
@@ -1168,6 +1169,7 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
 
         // Update scene graph for this camera (can happen multiple times per frame)
         {
+            // 更新场景图的作用？
             OgreProfileGroup("_updateSceneGraph", OGREPROF_GENERAL);
             _updateSceneGraph(camera);
 
@@ -1263,6 +1265,7 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
     } // end lock on scene graph mutex
 
     mDestRenderSystem->_beginGeometryCount();
+    // 清空buffer
     // Clear the viewport if required
     if (mCurrentViewport->getClearEveryFrame())
     {
@@ -1482,6 +1485,7 @@ void SceneManager::renderVisibleObjectsDefaultSequence(void)
     // Render each separate queue
     const RenderQueue::RenderQueueGroupMap& groups = getRenderQueue()->_getQueueGroups();
 
+    // 自定义的渲染队列
     for (uint8 qId = 0; qId < RENDER_QUEUE_COUNT; ++qId)
     {
         if(!groups[qId])
@@ -1709,6 +1713,7 @@ void SceneManager::renderBasicQueueGroupObjects(RenderQueueGroup* pGroup,
     // Iterate through priorities
     auto visitor = mActiveQueuedRenderableVisitor;
 
+    // 优先级队列
     for (const auto& pg : pGroup->getPriorityGroups())
     {
         RenderPriorityGroup* pPriorityGrp = pg.second;
@@ -1752,6 +1757,7 @@ void SceneManager::issueRenderWithLights(Renderable* rend, const Pass* pass,
                                          bool lightScissoringClipping)
 {
     useLights(pLightListToUse, pass->getMaxSimultaneousLights());
+    // 更新渲染所需的Params
     fireRenderSingleObject(rend, pass, mAutoParamDataSource.get(), pLightListToUse, false);
 
     // optional light scissoring & clipping
@@ -1765,9 +1771,11 @@ void SceneManager::issueRenderWithLights(Renderable* rend, const Pass* pass,
         if (pLightListToUse->empty())
             return;
 
+        // 只绘制Scissor裁剪后的部分
         if (pass->getLightScissoringEnabled())
             scissored = buildAndSetScissor(*pLightListToUse, mCameraInProgress);
 
+        // 通过平面裁剪(平面：vec3 normal+float real)
         if (pass->getLightClipPlanesEnabled())
             clipped = buildAndSetLightClip(*pLightListToUse);
 
@@ -1776,6 +1784,7 @@ void SceneManager::issueRenderWithLights(Renderable* rend, const Pass* pass,
     }
 
     // nfz: set up multipass rendering
+    // 设置Pass数量
     mDestRenderSystem->setCurrentPassIterationCount(pass->getPassIterationCount());
     _issueRenderOp(rend, pass);
 

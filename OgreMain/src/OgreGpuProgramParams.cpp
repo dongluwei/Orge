@@ -1555,7 +1555,7 @@ namespace Ogre
         DualQuaternion dQuat;
 
         mActivePassIterationIndex = std::numeric_limits<size_t>::max();
-
+        // 更新所有的语义
         // Autoconstant index is not a physical index
         for (const auto& ac : mAutoConstants)
         {

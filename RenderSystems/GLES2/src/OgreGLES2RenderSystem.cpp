@@ -1239,6 +1239,7 @@ namespace Ogre {
                 break;
         }
 
+        // Draw会在GPU立即执行吗
         GLenum polyMode = mPolygonMode;
         if (op.useIndexes)
         {
@@ -1821,6 +1822,7 @@ namespace Ogre {
                 break;
         };
 
+        // 绘制前的绑定
         OGRE_CHECK_GL_ERROR(glVertexAttribPointer(attrib,
                                                   typeCount,
                                                   GLES2HardwareBufferManager::getGLType(elem.getType()),
