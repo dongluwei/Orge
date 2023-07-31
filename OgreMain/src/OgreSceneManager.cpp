@@ -1109,7 +1109,7 @@ void SceneManager::prepareRenderQueue(void)
     // Global split options
     updateRenderQueueSplitOptions();
 }
-// 一次Render，Camera, ViewPort
+// note 一次Render，Camera, ViewPort
 //-----------------------------------------------------------------------
 void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverlays)
 {
@@ -1169,7 +1169,7 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
 
         // Update scene graph for this camera (can happen multiple times per frame)
         {
-            // 更新场景图的作用？
+            // note 以Root为起点，更新场景所有Node的World scale，position，rotate 和 AABB
             OgreProfileGroup("_updateSceneGraph", OGREPROF_GENERAL);
             _updateSceneGraph(camera);
 
@@ -1188,6 +1188,7 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
 
         if (mIlluminationStage != IRS_RENDER_TO_TEXTURE && mFindVisibleObjects)
         {
+            // note 计算相机视椎体变化后的光源
             // Locate any lights which could be affecting the frustum
             findLightsAffectingFrustum(camera);
 
@@ -1205,6 +1206,7 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
                 // guaranteed persistent. Make sure that anything which
                 // MUST be specific to this camera / target is done
                 // AFTER THIS POINT
+                // note 为所有光源更新shadowMap
                 prepareShadowTextures(camera, vp);
                 // reset the cameras & viewport because of the re-entrant call
                 mCameraInProgress = camera;
@@ -1265,7 +1267,7 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
     } // end lock on scene graph mutex
 
     mDestRenderSystem->_beginGeometryCount();
-    // 清空buffer
+
     // Clear the viewport if required
     if (mCurrentViewport->getClearEveryFrame())
     {
@@ -1485,7 +1487,7 @@ void SceneManager::renderVisibleObjectsDefaultSequence(void)
     // Render each separate queue
     const RenderQueue::RenderQueueGroupMap& groups = getRenderQueue()->_getQueueGroups();
 
-    // 自定义的渲染队列
+    // note自定义的渲染队列
     for (uint8 qId = 0; qId < RENDER_QUEUE_COUNT; ++qId)
     {
         if(!groups[qId])
@@ -1545,6 +1547,7 @@ void SceneManager::SceneMgrQueuedRenderableVisitor::visit(const Pass* p, Rendera
 
     bool useInstancing = mUsedPass->hasVertexProgram() && mUsedPass->getVertexProgram()->isInstancingIncluded();
 
+    // note 渲染RenderableList
     for (Renderable* r : rs)
     {
         // Give SM a chance to eliminate
@@ -1757,7 +1760,7 @@ void SceneManager::issueRenderWithLights(Renderable* rend, const Pass* pass,
                                          bool lightScissoringClipping)
 {
     useLights(pLightListToUse, pass->getMaxSimultaneousLights());
-    // 更新渲染所需的Params
+    // note 更新渲染所需的Params
     fireRenderSingleObject(rend, pass, mAutoParamDataSource.get(), pLightListToUse, false);
 
     // optional light scissoring & clipping
@@ -1771,11 +1774,11 @@ void SceneManager::issueRenderWithLights(Renderable* rend, const Pass* pass,
         if (pLightListToUse->empty())
             return;
 
-        // 只绘制Scissor裁剪后的部分
+        // note 只绘制Scissor裁剪后的部分
         if (pass->getLightScissoringEnabled())
             scissored = buildAndSetScissor(*pLightListToUse, mCameraInProgress);
 
-        // 通过平面裁剪(平面：vec3 normal+float real)
+        // note 通过平面裁剪(平面：vec3 normal+float real)
         if (pass->getLightClipPlanesEnabled())
             clipped = buildAndSetLightClip(*pLightListToUse);
 
@@ -1784,8 +1787,9 @@ void SceneManager::issueRenderWithLights(Renderable* rend, const Pass* pass,
     }
 
     // nfz: set up multipass rendering
-    // 设置Pass数量
+    // note 设置Pass数量
     mDestRenderSystem->setCurrentPassIterationCount(pass->getPassIterationCount());
+    // note 真正的渲染
     _issueRenderOp(rend, pass);
 
      if (scissored == CLIPPED_SOME)

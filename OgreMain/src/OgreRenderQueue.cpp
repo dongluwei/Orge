@@ -228,7 +228,7 @@ namespace Ogre {
             pDstGroup->merge( rhs->mGroups[i].get() );
         }
     }
-
+    // note 更新物体可见性
     //---------------------------------------------------------------------
     void RenderQueue::processVisibleObject(MovableObject* mo, 
         Camera* cam, 

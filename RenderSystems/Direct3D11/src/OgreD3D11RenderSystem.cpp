@@ -1840,7 +1840,7 @@ namespace Ogre
         mDevice.GetImmediateContext()->CSSetShader( NULL, NULL, 0 );
     }
 
-    // 实际调用到这里，md直接跳转到父类去了
+    // note 实际调用到这里，md直接跳转到父类去了
     void D3D11RenderSystem::_render(const RenderOperation& op)
     {
 
